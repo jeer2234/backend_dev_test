@@ -14,26 +14,53 @@ spec = APISpec(
     plugins=[FlaskPlugin(), MarshmallowPlugin()],
 )
 
+
 # Define schemas
+
+
+class UserSchema(Schema):
+    fullname = fields.Str()
+    email = fields.Email(description="your email.", required=True)
+    password = fields.Int(description="your password.", required=True)
+    created_at = fields.DateTime()
+
+
+class PublicationSchema(Schema):
+
+    title = fields.Str()
+    description = fields.Str()
+    priority = fields.Str()
+    status = fields.Str()
+    published_time = fields.TimeDelta() #(seconds, minutes, hours, days, etc.),
+    user = fields.Str()
+    created_at = fields.TimeDelta()
+    updated_at = fields.TimeDelta()
+
+
+
 class InputSchema(Schema):
     number = fields.Int(description="An integer.", required=True)
+
 
 class OutputSchema(Schema):
     msg = fields.String(description="A message.", required=True)
 
+
 # register schemas with spec
+
+
 spec.components.schema("Input", schema=InputSchema)
 spec.components.schema("Output", schema=OutputSchema)
 
 # add swagger tags that are used for endpoint annotation
 tags = [
-            {'name': 'test functions',
-             'description': 'For testing the API.'
-            },
-            {'name': 'calculation functions',
-             'description': 'Functions for calculating.'
-            },
-       ]
+    {'name': 'test functions',
+     'description': 'For testing the API.'
+     },
+    {'name': 'calculation functions',
+     'description': 'Functions for calculating.'
+     },
+]
 
 for tag in tags:
     print(f"Adding tag: {tag['name']}")

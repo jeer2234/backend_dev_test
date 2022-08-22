@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request
+from .forms import LoginForm
+
 
 # define the blueprint
 blueprint_x = Blueprint(name="blueprint_x", import_name=__name__)
@@ -55,3 +57,7 @@ def plus_x():
     result = in_val + x
     output = {"msg": f"Your result is: '{result}'"}
     return jsonify(output)
+
+@blueprint_x.route('/login', methods=['POST'])
+def login():
+    form = LoginForm()
