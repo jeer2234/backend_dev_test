@@ -21,24 +21,24 @@ spec = APISpec(
 class UserSchema(Schema):
     fullname = fields.Str()
     email = fields.Email(description="your email.", required=True)
+
+
+class UserLoginSchema(UserSchema):
     password = fields.Int(description="your password.", required=True)
-    created_at = fields.DateTime()
 
 
 class PublicationSchema(Schema):
-
     title = fields.Str()
     description = fields.Str()
     priority = fields.Str()
     status = fields.Str()
-    published_time = fields.TimeDelta() #(seconds, minutes, hours, days, etc.),
+    published_time = fields.TimeDelta()  # (seconds, minutes, hours, days, etc.),
     user = fields.Str()
     created_at = fields.TimeDelta()
     updated_at = fields.TimeDelta()
 
 
-
-class InputSchema(Schema):
+class IdInputSchema(Schema):
     number = fields.Int(description="An integer.", required=True)
 
 
@@ -49,16 +49,19 @@ class OutputSchema(Schema):
 # register schemas with spec
 
 
-spec.components.schema("Input", schema=InputSchema)
+spec.components.schema("Input", schema=IdInputSchema)
 spec.components.schema("Output", schema=OutputSchema)
+spec.components.schema("Login", schema=UserLoginSchema)
+spec.components.schema("UserResponse", schema=UserSchema)
+
 
 # add swagger tags that are used for endpoint annotation
 tags = [
-    {'name': 'test functions',
-     'description': 'For testing the API.'
+    {'name': 'Publication Management',
+     'description': 'management of publications of users.'
      },
-    {'name': 'calculation functions',
-     'description': 'Functions for calculating.'
+    {'name': 'User Management',
+     'description': 'User functionality endpoints.'
      },
 ]
 

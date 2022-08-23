@@ -1,14 +1,15 @@
 from datetime import datetime
+from flask_login import UserMixin
+from . import db
 
-from .app import db
 
-
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(150))
-    email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
+    email = db.Column(db.String(120), nullable=False,  index=True, unique=True)
+    password_hash = db.Column(db.String(128), nullable=False)
     posts = db.relationship('Publication', backref='author', lazy='dynamic')
+    created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return '<User {}>'.format(self.full_name)
