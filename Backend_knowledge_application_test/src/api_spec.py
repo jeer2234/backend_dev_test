@@ -44,6 +44,12 @@ class IdInputSchema(Schema):
 
 class OutputSchema(Schema):
     msg = fields.String(description="A message.", required=True)
+    
+class UserParameter(Schema):
+    user_id = fields.Str()
+    
+class ReadSchema(UserParameter):
+    content = fields.Str()
 
 
 # register schemas with spec
@@ -53,6 +59,8 @@ spec.components.schema("Input", schema=IdInputSchema)
 spec.components.schema("Output", schema=OutputSchema)
 spec.components.schema("Login", schema=UserLoginSchema)
 spec.components.schema("UserResponse", schema=UserSchema)
+spec.components.schema("UserParameter", schema=UserParameter)
+spec.components.schema("ReadSchema",schema=ReadSchema)
 
 
 # add swagger tags that are used for endpoint annotation

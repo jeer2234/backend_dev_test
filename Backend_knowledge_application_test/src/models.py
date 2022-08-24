@@ -13,6 +13,14 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.full_name)
+    
+    @property
+    def serialized(self):
+        """Return object data in serializeable format"""
+        return {
+            'full_name': self.full_name,
+            'email': self.email,
+        }
 
 
 class Publication(db.Model):

@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from ..models import User
+#from ..api_spec import 
 from .. import db
 
 # define the blueprint
@@ -36,8 +37,8 @@ def user_update():
         ---
         put:
           description: increments the input by x
-          requestBody:
-            required: true
+          parameters:
+            required:  true
             content:
                 application/json:
                     schema: InputSchema
@@ -115,35 +116,42 @@ def user_create():
     if user:  # if a user is found, we want to redirect back to signup page so user can try again
         output = {'message': 'email already i use'}
         return jsonify(output)
+        
+    user = User(full_name=name, email=email, password_hash=password)
+    db.session.add(user)
+    db.session.commit()
+        
+    return jsonify({
+        'data': user.serialized})
 
-
-@blueprint_x.route('/read', methods=['GET'])
+@blueprint_x.route('/read/<user_id>', methods=['GET'])
 def user_read():
-    """
-            ---
-            get:
-              description: logout endpoint
-              requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema: IdInputSchema
-
-              responses:
-                '200':
-                  description: call successful
-                  content:
-                    application/json:
-                      schema: UserSchema
-              tags:
-                  - User Management
-            """
+    
+    """Gist detail view.
+    ---
+    get:
+      parameters:
+        - in: path
+          schema: UserParameter
+        
+      responses:
+        200:
+          content:
+            application/json:
+              schema: ReadSchema
+          
+      tags:
+      - User Managemen
+   """
     data = request.get_json()
 
-    employee = User.query.filter_by(id=data["user_id"]).first()
+    employee = User.query.filter_by(id=int(data["user_id"])).first()
+    
     if employee:
-        return  # user profile schema object jsonfy
-    return f"Employee with id ={data['user_id']} Doenst exist"
+        return jsonify({
+        'data': user.serialized})
+        
+    return jsonify({"error": "Employee id Doenst exist"})
 
 
 @blueprint_x.route('/delete', methods=['DELETE'])

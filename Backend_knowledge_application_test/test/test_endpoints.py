@@ -3,6 +3,23 @@ import requests
 from openapi_spec_validator import validate_spec_url
 
 
+
+def test_json_data(client):
+    response = client.post("/graphql", json={
+        "query": """
+            query User($id: String!) {
+                user(id: $id) {
+                    name
+                    theme
+                    picture_url
+                }
+            }
+        """,
+        variables={"id": 2},
+    })
+    assert response.json["data"]["user"]["name"] == "Flask"
+  
+  
 def test_blueprint_x_test(api_v1_host):
     endpoint = os.path.join(api_v1_host, 'path_for_blueprint_x', 'test')
     response = requests.get(endpoint)
