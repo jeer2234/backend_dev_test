@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_login import UserMixin
-from . import db
+from .app import db
 
 
 class User(UserMixin, db.Model):
@@ -14,13 +14,17 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<User {}>'.format(self.full_name)
     
-    @property
-    def serialized(self):
-        """Return object data in serializeable format"""
-        return {
-            'full_name': self.full_name,
-            'email': self.email,
-        }
+    def json(self):
+        return {'id': self.id, 'full_name': self.full_name, 'email': self.email }
+
+    def add_user(_full_name, _email, _password_hash):
+        """function to add movie to database using _title, _year, _genre
+        as parameters"""
+        # creating an instance of our Movie constructor
+        new_user = User(full_name=_full_name, email=_email, password_hash=_password_hash)
+        db.session.add(new_user)  # add new movie to database session
+        db.session.commit() # commit changes to session
+        return new_user
 
 
 class Publication(db.Model):

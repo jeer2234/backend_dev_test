@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request
+#from ..api_spec import
+from ..app import db
 from ..models import User
-#from ..api_spec import 
-from .. import db
+
 
 # define the blueprint
 blueprint_x = Blueprint(name="user-management", import_name=__name__)
@@ -113,27 +114,28 @@ def user_create():
 
     user = User.query.filter_by(email=email).first()
 
+
     if user:  # if a user is found, we want to redirect back to signup page so user can try again
         output = {'message': 'email already i use'}
         return jsonify(output)
         
-    user = User(full_name=name, email=email, password_hash=password)
-    db.session.add(user)
-    db.session.commit()
-        
-    return jsonify({
-        'data': user.serialized})
+    user = User.add_user(_full_name=name, _email=email, _password_hash=password)
+
+    return jsonify(user.json())
 
 @blueprint_x.route('/read/<user_id>', methods=['GET'])
-def user_read():
+def user_read(user_id):
     
     """Gist detail view.
     ---
     get:
+      content:
+        application/json:
       parameters:
         - in: path
           schema: UserParameter
-        
+
+
       responses:
         200:
           content:
@@ -141,17 +143,16 @@ def user_read():
               schema: ReadSchema
           
       tags:
-      - User Managemen
+      - User Management
    """
-    data = request.get_json()
+    #data = request.get_json()
 
-    employee = User.query.filter_by(id=int(data["user_id"])).first()
+    employee = User.query.get(int(user_id))
     
     if employee:
-        return jsonify({
-        'data': user.serialized})
+        return jsonify(employee.json())
         
-    return jsonify({"error": "Employee id Doenst exist"})
+    return jsonify({"error": "Employee id Doesnt exist"})
 
 
 @blueprint_x.route('/delete', methods=['DELETE'])

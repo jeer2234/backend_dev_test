@@ -44,11 +44,11 @@ class IdInputSchema(Schema):
 
 class OutputSchema(Schema):
     msg = fields.String(description="A message.", required=True)
-    
+
 class UserParameter(Schema):
-    user_id = fields.Str()
-    
-class ReadSchema(UserParameter):
+    user_id = fields.Int()
+
+class ReadSchema(UserParameter, UserSchema):
     content = fields.Str()
 
 
