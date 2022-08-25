@@ -21,7 +21,26 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+        
 
+    def update_user(self, **kwargs):
+        if kwargs:
+            
+            for parameter in kwargs:
+                if parameter == 'full_name':
+                    self.full_name = kwargs[parameter]
+                
+                if parameter == 'email':
+                    self.email = kwargs[parameter]
+                
+                if parameter == 'password':
+                    self.set_password(kwargs[parameter])
+            
+            db.session.add(self)
+            db.session.commit()
+        else:
+            return None
+            
     def json(self):
         return {'id': self.id, 'full_name': self.full_name, 'email': self.email}
 

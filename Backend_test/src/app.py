@@ -27,9 +27,9 @@ def create_app():
     migrate.init_app(app, db)
 
     # blueprint for auth routes in our app
-    from Backend_test.src.endpoints.blueprint_x import blueprint_x
-    from Backend_test.src.endpoints.swagger import swagger_ui_blueprint, SWAGGER_URL
-    from Backend_test.src.api_spec import spec
+    from .endpoints.blueprint_x import blueprint_x
+    from .endpoints.swagger import swagger_ui_blueprint, SWAGGER_URL
+    from .api_spec import spec
 
     # register blueprints. ensure that all paths are versioned!
     app.register_blueprint(blueprint_x, url_prefix="/api/v1/user-management")
@@ -49,7 +49,7 @@ def create_app():
     def create_swagger_spec():
         return jsonify(spec.to_dict())
 
-    from Backend_test.src.models import User
+    from .models import User
 
     @login_manager.user_loader
     def load_user(id):

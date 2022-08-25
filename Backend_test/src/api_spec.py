@@ -4,7 +4,7 @@
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
 
 # Create an APISpec
 spec = APISpec(
@@ -30,11 +30,19 @@ class UserSchema(Schema):
 
 
 class UserLoginSchema(UserSchema):
-    password = fields.Str(description="your password.", required=True)
+    password = fields.Str(description="your password.", validate=validate.Length(min=6), required=True)
+    
 
 
 class UserCreateSchema(UserLoginSchema):
     full_name = fields.Str()
+    
+    
+    
+class UserUpdateSchema(UserLoginSchema):
+     full_name = fields.Str(load_default = '')
+     email = fields.Email(load_default = '')
+     password = fields.Str(load_default = '')
 
 
 class UserProfile(IDinputSchema, UserSchema):
@@ -65,6 +73,8 @@ spec.components.schema("UserParameter", schema=UserParameter)
 spec.components.schema("UserLoginSchema", schema=UserLoginSchema)
 spec.components.schema("UserCreateSchema", schema=UserCreateSchema)
 spec.components.schema("UserProfile", schema=UserProfile)
+spec.components.schema("UserUpdateSchema", schema=UserUpdateSchema)
+
 
 # add swagger tags that are used for endpoint annotation
 tags = [

@@ -46,23 +46,30 @@ def user_update():
                 required: true
                 content:
                     application/json:
-                        schema: UserParameter
+                        schema: UserUpdateSchema
               responses:
                 '200':
                   description: call successful
                   content:
                     application/json:
-                      schema: UserParameter
+                      schema: UserCreateSchema
               tags:
                   - User Management
             """
     # retrieve body data from input JSON
-    data = request.get_json()
-    in_val = data['number']
-    # compute result and output as JSON
-    result = in_val + x
-    output = {"msg": f"Your result is: '{result}'"}
-    return jsonify(output)
+    if current_user.is_authenticated:
+        
+        data = request.get_json()    
+        for test in list(data):
+            if not data[test]:
+                del data[test]
+                
+        current_user.update_user(**data)
+        return jsonify(data)
+               
+  
+     
+    return jsonify({'error': 'couldnt update user'})
 
 
 @blueprint_x.route('/login', methods=['POST'])
