@@ -1,5 +1,6 @@
 import pytest
-from src import create_app
+from Backend_test.src.app import create_app
+
 
 @pytest.fixture()
 def app():
@@ -14,6 +15,7 @@ def app():
 
     # clean up / reset resources here
 
+
 @pytest.fixture()
 def client(app):
     return app.test_client()
@@ -22,6 +24,7 @@ def client(app):
 @pytest.fixture()
 def runner(app):
     return app.test_cli_runner()
+
 
 """
 def pytest_addoption(parser):

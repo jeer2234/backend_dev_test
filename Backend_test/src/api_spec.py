@@ -16,20 +16,21 @@ spec = APISpec(
 
 
 # Define schemas
-    
+
 class IDinputSchema(Schema):
     id = fields.Int(description="An string number.", required=True)
-    
+
+
 class UserParameter(Schema):
     user_id = fields.Int()
-    
-    
+
+
 class UserSchema(Schema):
     email = fields.Email(description="your email.", required=True)
-       
-        
+
+
 class UserLoginSchema(UserSchema):
-    password = fields.Str(description="your password.", required=True);
+    password = fields.Str(description="your password.", required=True)
 
 
 class UserCreateSchema(UserLoginSchema):
@@ -38,8 +39,8 @@ class UserCreateSchema(UserLoginSchema):
 
 class UserProfile(IDinputSchema, UserSchema):
     full_name = fields.Str()
-    
-    
+
+
 class PublicationSchema(Schema):
     title = fields.Str()
     description = fields.Str()
@@ -49,10 +50,10 @@ class PublicationSchema(Schema):
     user = fields.Str()
     created_at = fields.TimeDelta()
     updated_at = fields.TimeDelta()
-    
+
+
 class OutputSchema(Schema):
     msg = fields.String(description="A message.", required=True)
-
 
 
 # register schemas with spec
@@ -64,7 +65,6 @@ spec.components.schema("UserParameter", schema=UserParameter)
 spec.components.schema("UserLoginSchema", schema=UserLoginSchema)
 spec.components.schema("UserCreateSchema", schema=UserCreateSchema)
 spec.components.schema("UserProfile", schema=UserProfile)
-
 
 # add swagger tags that are used for endpoint annotation
 tags = [

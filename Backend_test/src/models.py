@@ -1,29 +1,29 @@
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from .app import db, login_manager
+from .app import db
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(150))
-    email = db.Column(db.String(120), nullable=False,  index=True, unique=True)
+    email = db.Column(db.String(120), nullable=False, index=True, unique=True)
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Publication', backref='author', lazy='dynamic')
-    
+
     created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return '<User {}>'.format(self.full_name)
-    
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
     def json(self):
-        return {'id': self.id, 'full_name': self.full_name, 'email': self.email }
-        
+        return {'id': self.id, 'full_name': self.full_name, 'email': self.email}
 
     def add_user(_full_name, _email, _password_hash):
         """function to add movie to database using _title, _year, _genre
@@ -32,7 +32,7 @@ class User(UserMixin, db.Model):
         new_user = User(full_name=_full_name, email=_email)
         new_user.set_password(_password_hash)
         db.session.add(new_user)  # add new movie to database session
-        db.session.commit() # commit changes to session
+        db.session.commit()  # commit changes to session
         return new_user
 
 
