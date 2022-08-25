@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_login import current_user, login_user, logout_user, login_required
 #from ..api_spec import
 from ..app import db
 from ..models import User
@@ -13,6 +14,7 @@ x = 5
 
 # add view function to the blueprint
 @blueprint_x.route('/logout', methods=['GET'])
+#@login_required
 def user_logout():
     """
         ---
@@ -27,31 +29,34 @@ def user_logout():
           tags:
               - User Management
         """
-    output = {"msg": "I'm the test endpoint from blueprint_x."}
-    return jsonify(output)
+    if current_user.is_authenticated:        
+        logout_user()
+        return jsonify({'success': 'hello there'})
+        
+    return jsonify({'error': 'you need to be login to use this endpoint'})
 
 
 # add view function to the blueprint
 @blueprint_x.route('/update', methods=['PUT'])
 def user_update():
     """
-        ---
-        put:
-          description: increments the input by x
-          parameters:
-            required:  true
-            content:
-                application/json:
-                    schema: InputSchema
-          responses:
-            '200':
-              description: call successful
-              content:
-                application/json:
-                  schema: OutputSchema
-          tags:
-              - User Management
-        """
+            ---
+            put:
+              description: user update endpoint
+              requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema: UserParameter
+              responses:
+                '200':
+                  description: call successful
+                  content:
+                    application/json:
+                      schema: UserParameter
+              tags:
+                  - User Management
+            """
     # retrieve body data from input JSON
     data = request.get_json()
     in_val = data['number']
@@ -77,12 +82,21 @@ def login():
                   description: call successful
                   content:
                     application/json:
-                      schema: UserSchema
+                      schema: UserProfile
               tags:
                   - User Management
             """
-
-    # form = LoginForm()
+    if current_user.is_authenticated:
+        return jsonify(current_user.json())
+        
+    data = request.get_json()
+    user = User.query.filter_by(email=data["email"]).first()
+    
+    if user is None or not user.check_password(data["password"]):
+        return jsonify({'error': 'Invalid username or password'})
+    
+    login_user(user, remember=True)
+    return jsonify(user.json())
 
 
 @blueprint_x.route('/create', methods=['POST'])
@@ -90,18 +104,18 @@ def user_create():
     """
             ---
             post:
-              description: login endpoint
+              description: create endpoint
               requestBody:
                 required: true
                 content:
                     application/json:
-                        schema: UserLoginSchema
+                        schema: UserCreateSchema
               responses:
                 '200':
                   description: call successful
                   content:
                     application/json:
-                      schema: UserSchema
+                      schema: UserProfile
               tags:
                   - User Management
             """
@@ -109,7 +123,7 @@ def user_create():
 
     # code to validate and add user to database goes here
     email = data['email']
-    name = data['fullname']
+    name = data['full_name']
     password = data['password']
 
     user = User.query.filter_by(email=email).first()
@@ -126,7 +140,7 @@ def user_create():
 @blueprint_x.route('/read/<user_id>', methods=['GET'])
 def user_read(user_id):
     
-    """Gist detail view.
+    """
     ---
     get:
       content:
@@ -140,17 +154,18 @@ def user_read(user_id):
         200:
           content:
             application/json:
-              schema: ReadSchema
+              schema: UserProfile
           
       tags:
       - User Management
    """
     #data = request.get_json()
-
-    employee = User.query.get(int(user_id))
     
-    if employee:
-        return jsonify(employee.json())
+    
+    user = User.query.get(int(user_id))
+    
+    if user:
+        return jsonify(user.json())
         
     return jsonify({"error": "Employee id Doesnt exist"})
 

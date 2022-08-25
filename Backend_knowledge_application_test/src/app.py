@@ -3,18 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 #from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 
-#from flask_login import (
-#    UserMixin,
-#    login_user,
-#    LoginManager,
-#    current_user,
-#    logout_user,
-#    login_required,
-#)
+from flask_login import LoginManager
+
 # init SQLAlchemy so we can use it later in our models
-#login_manager = LoginManager()
+login_manager = LoginManager()
 #login_manager.session_protection = "strong"
-#login_manager.login_view = "login"
+#login_manager.login_view = "/api/docs/#/User%20Management/post_api_v1_user_management_login"
 #login_manager.login_message_category = "info"
 
 db = SQLAlchemy()
@@ -29,7 +23,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 
-    #login_manager.init_app(app)
+    login_manager.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
 
@@ -50,10 +44,18 @@ def create_app():
                 continue
             print(f"Loading swagger docs for function: {fn_name}")
             view_fn = app.view_functions[fn_name]
-            spec.path(view=view_fn)
-
+            spec.path(view=view_fn)  
+    
     @app.route("/api/swagger.json")
     def create_swagger_spec():
         return jsonify(spec.to_dict())
+        
+    from src.models import User
+    
+    
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
+
 
     return app

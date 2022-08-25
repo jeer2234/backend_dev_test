@@ -16,17 +16,30 @@ spec = APISpec(
 
 
 # Define schemas
-
-
+    
+class IDinputSchema(Schema):
+    id = fields.Int(description="An string number.", required=True)
+    
+class UserParameter(Schema):
+    user_id = fields.Int()
+    
+    
 class UserSchema(Schema):
-    fullname = fields.Str()
     email = fields.Email(description="your email.", required=True)
-
-
+       
+        
 class UserLoginSchema(UserSchema):
-    password = fields.Int(description="your password.", required=True)
+    password = fields.Str(description="your password.", required=True);
 
 
+class UserCreateSchema(UserLoginSchema):
+    full_name = fields.Str()
+
+
+class UserProfile(IDinputSchema, UserSchema):
+    full_name = fields.Str()
+    
+    
 class PublicationSchema(Schema):
     title = fields.Str()
     description = fields.Str()
@@ -36,31 +49,21 @@ class PublicationSchema(Schema):
     user = fields.Str()
     created_at = fields.TimeDelta()
     updated_at = fields.TimeDelta()
-
-
-class IdInputSchema(Schema):
-    number = fields.Int(description="An integer.", required=True)
-
-
+    
 class OutputSchema(Schema):
     msg = fields.String(description="A message.", required=True)
 
-class UserParameter(Schema):
-    user_id = fields.Int()
-
-class ReadSchema(UserParameter, UserSchema):
-    content = fields.Str()
 
 
 # register schemas with spec
 
 
-spec.components.schema("Input", schema=IdInputSchema)
-spec.components.schema("Output", schema=OutputSchema)
-spec.components.schema("Login", schema=UserLoginSchema)
-spec.components.schema("UserResponse", schema=UserSchema)
+spec.components.schema("IDinputSchema", schema=IDinputSchema)
+spec.components.schema("OutputSchema", schema=OutputSchema)
 spec.components.schema("UserParameter", schema=UserParameter)
-spec.components.schema("ReadSchema",schema=ReadSchema)
+spec.components.schema("UserLoginSchema", schema=UserLoginSchema)
+spec.components.schema("UserCreateSchema", schema=UserCreateSchema)
+spec.components.schema("UserProfile", schema=UserProfile)
 
 
 # add swagger tags that are used for endpoint annotation
