@@ -179,19 +179,22 @@ def user_delete():
     """
                 ---
                 delete:
-                  description: logout endpoint
-                  requestBody:
-                    required: true
-                    content:
-                        application/json:
-                            schema: IdInputSchema
+                  description: delete current user endpoint
 
                   responses:
                     '200':
                       description: call successful
                       content:
                         application/json:
-                          schema: UserSchema
+                          schema: OutputSchema
                   tags:
                       - User Management
                 """
+     
+    if current_user.is_authenticated:
+        current_user.delete_user()
+        #test to see if after been the user deleted yo can use login required endpoints
+                  
+        return jsonify({'msg': 'your user has been successfully deleted'})
+    return jsonify({'error': 'you need to be login to delete your user'})
+    

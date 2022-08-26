@@ -44,6 +44,10 @@ class User(UserMixin, db.Model):
     def json(self):
         return {'id': self.id, 'full_name': self.full_name, 'email': self.email}
 
+    def delete_user(self):
+        db.session.delete(self)
+        db.session.commit()
+        
     def add_user(_full_name, _email, _password_hash):
         """function to add movie to database using _title, _year, _genre
         as parameters"""
