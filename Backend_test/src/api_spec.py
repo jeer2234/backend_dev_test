@@ -15,7 +15,7 @@ spec = APISpec(
 )
 
 
-# Define schemas
+# User Management schemas
 
 class IDinputSchema(Schema):
     id = fields.Int(description="An string number.", required=True)
@@ -31,23 +31,27 @@ class UserSchema(Schema):
 
 class UserLoginSchema(UserSchema):
     password = fields.Str(description="your password.", validate=validate.Length(min=6), required=True)
-    
 
 
 class UserCreateSchema(UserLoginSchema):
     full_name = fields.Str()
-    
-    
-    
+
+
 class UserUpdateSchema(UserLoginSchema):
-     full_name = fields.Str(load_default = '')
-     email = fields.Email(load_default = '')
-     password = fields.Str(load_default = '')
+    full_name = fields.Str(load_default='')
+    email = fields.Email(load_default='')
+    password = fields.Str(load_default='')
 
 
 class UserProfile(IDinputSchema, UserSchema):
     full_name = fields.Str()
 
+
+class OutputSchema(Schema):
+    msg = fields.String(description="A message.", required=True)
+
+
+# User Management schemas
 
 class PublicationSchema(Schema):
     title = fields.Str()
@@ -58,10 +62,6 @@ class PublicationSchema(Schema):
     user = fields.Str()
     created_at = fields.TimeDelta()
     updated_at = fields.TimeDelta()
-
-
-class OutputSchema(Schema):
-    msg = fields.String(description="A message.", required=True)
 
 
 # register schemas with spec
@@ -75,11 +75,10 @@ spec.components.schema("UserCreateSchema", schema=UserCreateSchema)
 spec.components.schema("UserProfile", schema=UserProfile)
 spec.components.schema("UserUpdateSchema", schema=UserUpdateSchema)
 
-
 # add swagger tags that are used for endpoint annotation
 tags = [
     {'name': 'Publication Management',
-     'description': 'management of publications of users.'
+     'description': " user publication's management"
      },
     {'name': 'User Management',
      'description': 'User functionality endpoints.'

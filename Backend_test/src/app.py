@@ -5,12 +5,9 @@ from flask_migrate import Migrate
 
 from flask_login import LoginManager
 
-# init SQLAlchemy so we can use it later in our models
+# init SQLAlchemy, LoginManager and Migrate, so we can use it later in our app
 login_manager = LoginManager()
-# login_manager.session_protection = "strong"
 # login_manager.login_view = "/api/docs/#/User%20Management/post_api_v1_user_management_login"
-# login_manager.login_message_category = "info"
-
 db = SQLAlchemy()
 migrate = Migrate()
 
@@ -21,19 +18,21 @@ def create_app():
     app.secret_key = 'secret-key'
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     login_manager.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
 
     # blueprint for auth routes in our app
-    from .endpoints.blueprint_x import blueprint_x
+    from .endpoints.user_management import user_blueprint
+    from .endpoints.publication_management import publication_blueprint
     from .endpoints.swagger import swagger_ui_blueprint, SWAGGER_URL
     from .api_spec import spec
 
     # register blueprints. ensure that all paths are versioned!
-    app.register_blueprint(blueprint_x, url_prefix="/api/v1/user-management")
-    # app.register_blueprint(blueprint_y, url_prefix="/api/v1/publication-management")
+    app.register_blueprint(user_blueprint, url_prefix="/api/v1/user-management")
+    app.register_blueprint(publication_blueprint, url_prefix="/api/v1/publication-management")
     app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
     with app.test_request_context():
@@ -52,7 +51,7 @@ def create_app():
     from .models import User
 
     @login_manager.user_loader
-    def load_user(id):
-        return User.query.get(int(id))
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     return app

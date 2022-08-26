@@ -1,43 +1,16 @@
 from flask import Blueprint, jsonify, request
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, login_user, logout_user  # login_required
 # from ..api_spec import
-#from ..app import db
+# from ..app import db
 from ..models import User
 
 # define the blueprint
-blueprint_x = Blueprint(name="user-management", import_name=__name__)
-
-# note: global variables can be accessed from view functions
-x = 5
+publication_blueprint = Blueprint(name="publication-management", import_name=__name__)
 
 
 # add view function to the blueprint
-@blueprint_x.route('/logout', methods=['GET'])
-# @login_required
-def user_logout():
-    """
-        ---
-        get:
-          description: logout endpoint
-          responses:
-            '200':
-              description: call successful
-              content:
-                application/json:
-                  schema: OutputSchema
-          tags:
-              - User Management
-        """
-    if current_user.is_authenticated:
-        logout_user()
-        return jsonify({'success': 'hello there'})
-
-    return jsonify({'error': 'you need to be login to use this endpoint'})
-
-
-# add view function to the blueprint
-@blueprint_x.route('/update', methods=['PUT'])
-def user_update():
+@publication_blueprint.route('/update', methods=['PUT'])
+def publication_update():
     """
             ---
             put:
@@ -54,59 +27,23 @@ def user_update():
                     application/json:
                       schema: UserCreateSchema
               tags:
-                  - User Management
+                  - Publication Management
             """
-    # retrieve body data from input JSON
     if current_user.is_authenticated:
-        
-        data = request.get_json()    
+
+        data = request.get_json()
         for test in list(data):
             if not data[test]:
                 del data[test]
-                
+
         current_user.update_user(**data)
         return jsonify(data)
-               
-  
-     
-    return jsonify({'error': 'couldnt update user'})
+
+    return jsonify({'error': "couldn't update user"})
 
 
-@blueprint_x.route('/login', methods=['POST'])
-def login():
-    """
-            ---
-            post:
-              description: login endpoint
-              requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema: UserLoginSchema
-              responses:
-                '200':
-                  description: call successful
-                  content:
-                    application/json:
-                      schema: UserProfile
-              tags:
-                  - User Management
-            """
-    if current_user.is_authenticated:
-        return jsonify(current_user.json())
-
-    data = request.get_json()
-    user = User.query.filter_by(email=data["email"]).first()
-
-    if user is None or not user.check_password(data["password"]):
-        return jsonify({'error': 'Invalid username or password'})
-
-    login_user(user, remember=True)
-    return jsonify(user.json())
-
-
-@blueprint_x.route('/create', methods=['POST'])
-def user_create():
+@publication_blueprint.route('/create', methods=['POST'])
+def publication_create():
     """
             ---
             post:
@@ -123,7 +60,7 @@ def user_create():
                     application/json:
                       schema: UserProfile
               tags:
-                  - User Management
+                  - Publication Management
             """
     data = request.get_json()
 
@@ -134,7 +71,7 @@ def user_create():
 
     user = User.query.filter_by(email=email).first()
 
-    if user:  # if a user is found, we want to redirect back to signup page so user can try again
+    if user:
         output = {'message': 'email already i use'}
         return jsonify(output)
 
@@ -143,8 +80,35 @@ def user_create():
     return jsonify(user.json())
 
 
-@blueprint_x.route('/read/<user_id>', methods=['GET'])
-def user_read(user_id):
+@publication_blueprint.route('/read', methods=['GET'])
+def publications_read():
+    """
+    ---
+    get:
+      content:
+        application/json:
+
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema: UserProfile
+
+      tags:
+      - Publication Management
+   """
+
+    user = User.query.get()
+
+    if user:
+        return jsonify(user.json())
+
+    return jsonify({"error": "Employee id Doesnt exist"})
+
+
+@publication_blueprint.route('/read/<user_id>', methods=['GET'])
+def publication_read(user_id):
     """
     ---
     get:
@@ -160,11 +124,10 @@ def user_read(user_id):
           content:
             application/json:
               schema: UserProfile
-          
+
       tags:
-      - User Management
+      - Publication Management
    """
-    # data = request.get_json()
 
     user = User.query.get(int(user_id))
 
@@ -174,8 +137,8 @@ def user_read(user_id):
     return jsonify({"error": "Employee id Doesnt exist"})
 
 
-@blueprint_x.route('/delete', methods=['DELETE'])
-def user_delete():
+@publication_blueprint.route('/delete', methods=['DELETE'])
+def publication_delete():
     """
                 ---
                 delete:
@@ -188,13 +151,12 @@ def user_delete():
                         application/json:
                           schema: OutputSchema
                   tags:
-                      - User Management
+                      - Publication Management
                 """
-     
+
     if current_user.is_authenticated:
         current_user.delete_user()
-        #test to see if after been the user deleted yo can use login required endpoints
-                  
+        # test to see if after being the user deleted you can use login required endpoints
+
         return jsonify({'msg': 'your user has been successfully deleted'})
     return jsonify({'error': 'you need to be login to delete your user'})
-    

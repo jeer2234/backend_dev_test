@@ -1,23 +1,24 @@
 
 ## Flask Application Structure 
 ```
-.
-|──────src/
-| |────__init__.py
-| |────endpoints/
-| | |────__init__.py
-| | |────blueprint_x.py
-| | |────blueprint_y.py
-| | |────forms.py
-| | |────swagger.py
-| |──────api_spec.py
-| |──────app.py
-| |──────db.sqlite
-| |──────models.py
-|──────migrations/
-|──────tests/
-| |────conftest.py
-| |────test_endpoints.py
+
+|───backend_dev_test
+| |────Backend_test/
+| | |──────src/
+| | | |────endpoints/
+| | | | |────__init__.py
+| | | | |────user_management.py
+| | | | |────publication_management.py
+| | | | |────swagger.py
+| | | |────__init__.py
+| | | |──────api_spec.py
+| | | |──────app.py
+| | | |──────db.sqlite
+| | | |──────models.py
+| | |──────tests/
+| | | |────conftest.py
+| | | |────test_endpoints.py
+| | |──────migrations/
 
 
 ```
@@ -48,22 +49,29 @@ on bash shell
 ```
 $ env/bin/activate
 ```
-### Install with pip:
+### Install dependencies with pip:
 
 ```
 $ pip install -r requirements.txt
 ```
-
-
-
-## Run Flask
-### Run flask for develop
-
+## Run Tests
 
 ```
-$ cd Backend_knowledge_application_test\src
+$ python -m pytest 
+```
+
+## Run Flask
+
+### move to flask application location
+```
+$ cd backend_test\src
+```
+
+### Run flask for develop
+
+```
 $ flask --debug run
 ```
 In flask, Default port is `5000`
 
-Swagger document page:  `http://127.0.0.1:5000/api/docs`
+Go to Swagger document page:  `http://127.0.0.1:5000/api/docs`
