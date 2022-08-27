@@ -54,6 +54,19 @@ $ env/bin/activate
 ```
 $ pip install -r requirements.txt
 ```
+### create the database:
+Once you have Postgres installed and running, create a database called backend_dev
+```
+$ psql
+# create database backend_dev;
+CREATE DATABASE
+# \q
+```
+### set the environment variable:
+```
+$ set DATABASE_URL="postgresql:///backend_dev"
+```
+
 ## Run Tests
 
 ```
@@ -70,7 +83,7 @@ $ cd backend_test\src
 ### Run flask for develop
 
 ```
-$ flask --debug run
+$ flask run
 ```
 In flask, Default port is `5000`
 

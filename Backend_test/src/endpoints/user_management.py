@@ -7,6 +7,7 @@ from ..models import User
 # define the blueprint
 user_blueprint = Blueprint(name="user-management", import_name=__name__)
 
+
 # add view function to the blueprint
 @user_blueprint.route('/logout', methods=['GET'])
 # @login_required
@@ -125,9 +126,7 @@ def user_create():
     name = data['full_name']
     password = data['password']
 
-    user = User.query.filter_by(email=email).first()
-
-    if user:
+    if User.query.filter_by(email=email).first():
         output = {'message': 'email already i use'}
         return jsonify(output)
 

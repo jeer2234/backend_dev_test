@@ -17,7 +17,7 @@ spec = APISpec(
 
 # User Management schemas
 
-class IDinputSchema(Schema):
+class IdInputSchema(Schema):
     id = fields.Int(description="An string number.", required=True)
 
 
@@ -43,7 +43,7 @@ class UserUpdateSchema(UserLoginSchema):
     password = fields.Str(load_default='')
 
 
-class UserProfile(IDinputSchema, UserSchema):
+class UserProfile(IdInputSchema, UserSchema):
     full_name = fields.Str()
 
 
@@ -51,29 +51,47 @@ class OutputSchema(Schema):
     msg = fields.String(description="A message.", required=True)
 
 
-# User Management schemas
+# publication Management schemas
 
-class PublicationSchema(Schema):
+
+class PublicationUpdateSchema(Schema):
     title = fields.Str()
     description = fields.Str()
-    priority = fields.Str()
-    status = fields.Str()
-    published_time = fields.TimeDelta()  # (seconds, minutes, hours, days, etc.),
-    user = fields.Str()
-    created_at = fields.TimeDelta()
-    updated_at = fields.TimeDelta()
+    body = fields.Str()
 
 
-# register schemas with spec
+class QuerySchema(Schema):
+    priority = fields.Str(validate=validate.OneOf(["low", "high"]))
+    status = fields.Bool(alidate=validate.OneOf([True, False]))
 
 
-spec.components.schema("IDinputSchema", schema=IDinputSchema)
+class UpdateOutputSchema(QuerySchema, PublicationUpdateSchema):
+    pass
+
+
+class PublicationDetailSchema(UpdateOutputSchema):
+    user_id = fields.Int()
+    created_at = fields.DateTime()
+    published_at = fields.DateTime()
+    updated_at = fields.DateTime()
+
+
+# register  user management schemas with spec
+
+
+spec.components.schema("IdInputSchema", schema=IdInputSchema)
 spec.components.schema("OutputSchema", schema=OutputSchema)
 spec.components.schema("UserParameter", schema=UserParameter)
 spec.components.schema("UserLoginSchema", schema=UserLoginSchema)
 spec.components.schema("UserCreateSchema", schema=UserCreateSchema)
 spec.components.schema("UserProfile", schema=UserProfile)
 spec.components.schema("UserUpdateSchema", schema=UserUpdateSchema)
+
+# register  publication management schemas with spec
+
+spec.components.schema("PublicationUpdateSchema", schema=PublicationUpdateSchema)
+spec.components.schema("UpdateOutputSchema", schema=UpdateOutputSchema)
+spec.components.schema("QuerySchema", schema=QuerySchema)
 
 # add swagger tags that are used for endpoint annotation
 tags = [
